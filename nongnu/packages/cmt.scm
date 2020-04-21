@@ -1,19 +1,26 @@
 (define-module (nongnu packages cmt)
   #:use-module (gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages haskell-apps)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages ruby)
+  #:use-module (gnu packages rsync)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system ruby)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix git-download)
+  #:use-module (guix download)
   #:use-module (rnrs io ports)
   #:use-module ((guix licenses) #:prefix license:)
   #:export (xf86-input-cmt))
@@ -37,7 +44,7 @@
          (add-after 'unpack 'patch-more-shebangs
            (lambda _
              (substitute* "Makefile"
-               (("/usr/include") "/include")
+               (("/usr/") "/")
                (("-Werror") "-Wno-error"))
              #t)))
        #:make-flags
@@ -77,7 +84,7 @@
              (substitute* "common.mk"
                (("/bin/echo") (which "echo")))
              (substitute* "include/module.mk"
-               (("/usr/include") "/include"))
+               (("/usr/") "/"))
              #t)))
        #:make-flags
        (list (string-append "DESTDIR=" (assoc-ref %outputs "out"))
@@ -92,6 +99,50 @@
     (synopsis "ChromiumOS evdev library")
     (description "ChromiumOS evdev library")
     (license (list license:non-copyleft "https://github.com/GalliumOS"))))
+
+(define-public libinput-gestures
+  (package
+    (name "libinput-gestures")
+    (version "2.50")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/bulletmark/libinput-gestures/archive/"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "1pkly6chd91lkvvnm7aq0k0dm3c6h1pnn1bln3r1sg8z7fsh7737"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags
+       (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fuck-root
+           (lambda _
+             (substitute* "libinput-gestures.desktop"
+               (("/usr/") (string-append (assoc-ref %outputs "out") "/")))
+             (substitute* "libinput-gestures-setup"
+               (("!= root") "== root")
+               (("/usr/") "/"))
+             (substitute* "libinput-gestures"
+               (("wmctrl") (which "wmctrl")))
+             #t)))))
+    (inputs
+     `(("python3" ,python-3.8)
+       ("python-flake8" ,python-flake8)))
+    (propagated-inputs
+     `(("libinput" ,libinput)
+       ("xdotool" ,xdotool)
+       ("wmctrl" ,wmctrl)))
+    (home-page "https://github.com/iberianpig/libinput-gestures")
+    (synopsis "Multitouch gestures with libinput driver on linux")
+    (description "Fusuma is a multitouch gesture recognizer. This gem makes
+your linux able to recognize swipes or pinches and assign commands to them.")
+    (license license:gpl3)))
 
 (define-public xf86-input-cmt
    (package
@@ -116,8 +167,7 @@
         (modify-phases %standard-phases
           (add-after 'install 'set-configs
             (lambda _
-              (mkdir-p
-               (string-append
+              (mkdir-p (string-append
                 (assoc-ref %outputs "out")
                 "/share/X11/xorg.conf.d"))
               (for-each
@@ -128,7 +178,8 @@
                                (assoc-ref %outputs "out")
                                "/share/X11/xorg.conf.d/"
                                conf))))
-               '("40-touchpad-cmt.conf"
+               '("20-touchscreen.conf"
+                 "40-touchpad-cmt.conf"
                  "50-touchpad-cmt-samus.conf"))
               #t)))))
      (native-inputs
@@ -144,5 +195,3 @@
      (synopsis "ChromiumOS X11 input driver")
      (description "")
      (license (list license:non-copyleft "https://github.com/GalliumOS"))))
-
-xf86-input-cmt
