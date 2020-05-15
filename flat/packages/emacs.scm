@@ -1,6 +1,6 @@
 (define-module (flat packages emacs)
   #:use-module (guix packages)
-  #:use-module (guix git-download)
+  #:use-module (guix download)
   #:use-module (guix build utils)
   #:use-module (guix utils)
   #:use-module (gnu packages)
@@ -12,26 +12,20 @@
 ;; built-in emacs recipes, in an attempt to produce a "vanilla" emacs suitable
 ;; for shipping with "guix pack".
 (define-public emacs-native-comp
-  (let ((commit "92dc81f85e1b91db04487ccf1b52c0cd3328dfee")
-        (revision "0")
-        (emacs-version "28.0.50"))
-    (package
-     (inherit emacs-next)
-     (name "emacs-native-comp")
-     (version (git-version emacs-version revision commit))
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://git.savannah.gnu.org/git/emacs.git")
-             (commit commit)))
+  (package
+    (inherit emacs-next)
+    (name "emacs-native-comp")
+    (version "2020.05.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "http://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-d6f6353cfdbbea5501915675081265b4dc4591e3.tar.gz")
        (sha256
-        (base32 "1f22bxwq53hhdjlakmqz66y63vix5ybpnc1pk9fpy18wjh871scq"))
-       (file-name (git-file-name name version))
+        (base32 "0wb01r7lvgh55h4lb7r1hb4339qigs3f5zg8y8h54lan8slc6wcq"))
        (patches (search-patches "emacs27-exec-path.patch"
                                 "emacs-source-date-epoch.patch"))))
-     (arguments
-      (substitute-keyword-arguments (package-arguments emacs-next)
+    (arguments
+     (substitute-keyword-arguments (package-arguments emacs-next)
        ((#:configure-flags flags)
         `(cons* "--with-nativecomp" ,flags))
        ((#:phases phases)
@@ -40,7 +34,7 @@
            (add-before 'configure 'fix-/bin/pwd
              (lambda _
                (substitute* (find-files "." "^Makefile\\.in$")
-                            (("/bin/pwd") "pwd"))
+                 (("/bin/pwd") "pwd"))
                #t))
            ;; Make the gzip files writable so guix can set timestamps.
            (add-before 'reset-gzip-timestamps 'make-compressed-files-writable
@@ -83,8 +77,8 @@
                  (for-each (lambda (program)
                              (unless (wrapper? program)
                                (wrap-program
-                                program
-                                `("LIBRARY_PATH" prefix ,library-path))))
+                                   program
+                                 `("LIBRARY_PATH" prefix ,library-path))))
                            bin-list))
                #t))
            ;; Emacs' dumper files are incorrectly detected as executables, and
@@ -100,8 +94,9 @@
                              (rename-file real wrapper))
                            pdmp pdmp-real))
                #t))))))
-     (inputs
-      `(("gcc:lib" ,gcc "lib")
-        ("glibc" ,glibc)
-        ("libgccjit" ,libgccjit)
-        ,@(package-inputs emacs-next))))))
+    (inputs
+     `(("gcc:lib" ,gcc "lib")
+       ("glibc" ,glibc)
+       ("libgccjit" ,libgccjit)
+       ,@(package-inputs emacs-next)))))
+emacs-native-comp
