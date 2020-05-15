@@ -3,4 +3,5 @@
  (dependencies
  (channel
   (name nonguix)
-  (url "https://gitlab.com/Nonguix/nonguix.git"))))
+  (url "https://gitlab.com/Nonguix/nonguix.git")
+  (branch "master"))))
