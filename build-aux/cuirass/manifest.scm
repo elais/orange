@@ -6,5 +6,9 @@
   (call-with-values (lambda ()
                       (specification->package+output spec)) list))
 
-(list emacs-native-comp
-      linux)
+(define packages-list
+  '("emacs-native-comp"
+    "linux@5.4.41"))
+
+(packages->manifest
+ (map spec->packages packages-list))
