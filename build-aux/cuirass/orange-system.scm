@@ -22,7 +22,9 @@
 
 (define (drv-list store arguments)
   (let* ((manifest
-          (load* "manifest.scm"
+          (load* (string-append
+                  (diname (current-filename))
+                  "/manifest.scm")
                  (make-user-module
                   '((guix profiles) (gnu)))))
          (packages
