@@ -99,4 +99,3 @@
        ("glibc" ,glibc)
        ("libgccjit" ,libgccjit)
        ,@(package-inputs emacs-next)))))
-emacs-native-comp
