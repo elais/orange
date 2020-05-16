@@ -8,6 +8,8 @@
 
 (define packages-list
   '("emacs-native-comp"
+    "linux-firmware"
+    "emacs-next"
     "linux@5.4.41"))
 
 (packages->manifest
