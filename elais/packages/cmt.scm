@@ -1,4 +1,4 @@
-(define-module (nongnu packages cmt)
+(define-module (elais packages cmt)
   #:use-module (gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages freedesktop)
