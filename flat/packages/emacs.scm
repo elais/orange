@@ -21,9 +21,7 @@
        (method url-fetch)
        (uri "http://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-d6f6353cfdbbea5501915675081265b4dc4591e3.tar.gz")
        (sha256
-        (base32 "0wb01r7lvgh55h4lb7r1hb4339qigs3f5zg8y8h54lan8slc6wcq"))
-       (patches (search-patches "emacs27-exec-path.patch"
-                                "emacs-source-date-epoch.patch"))))
+        (base32 "0wb01r7lvgh55h4lb7r1hb4339qigs3f5zg8y8h54lan8slc6wcq"))))
     (arguments
      (substitute-keyword-arguments (package-arguments emacs-next)
        ((#:configure-flags flags)
