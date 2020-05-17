@@ -1,9 +1,9 @@
 (define-module (elais packages emacs-xyz)
-  :#use-modules (gnu)
-  :#use-modules (gnu packages emacs-xyz)
-  :#use-modules (guix build-system emacs)
-  :#use-modules (guix download)
-  :#use-modules ((guix licenses) #:prefix license:))
+  #:use-modules (gnu)
+  #:use-modules (gnu packages emacs-xyz)
+  #:use-modules (guix build-system emacs)
+  #:use-modules (guix download)
+  #:use-modules ((guix licenses) #:prefix license:))
 
 (define-public emacs-flymake
   (package
