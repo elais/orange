@@ -220,7 +220,7 @@ updating each Company backend individually.
 
 For more information, see https://github.com/raxod502/prescient.el.
 ")
-    (license #f)))
+    (license license:gpl3)))
 
 (define-public emacs-selectrum-prescient
   (package
@@ -251,7 +251,7 @@ or interactively.
 
 For more information, see https://github.com/raxod502/prescient.el.
 ")
-    (license #f)))
+    (license license:gpl3)))
 
 (define-public emacs-boon
   (package
