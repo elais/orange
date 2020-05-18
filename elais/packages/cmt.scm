@@ -151,3 +151,5 @@
      (synopsis "ChromiumOS X11 input driver")
      (description "")
      (license (list license:non-copyleft "https://github.com/GalliumOS"))))
+
+xf86-input-cmt
